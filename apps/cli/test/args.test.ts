@@ -113,7 +113,24 @@ test("concurrency is a positive search-only limit and does not change cache poli
     expect(() => parseCommand([...args, "--concurrency", "2"])).toThrow();
 });
 
-test("exclude patterns are repeatable, normalized for cache identity, and search-only", () => {
+test("files takes an optional root and only the filesystem policy flags", () => {
+  expect(parseCommand(["files"])).toEqual({ kind: "files", root: process.cwd(), policy: {} });
+  expect(parseCommand(["files", "src", "--hidden", "--no-ignore"])).toEqual({
+    kind: "files",
+    root: "src",
+    policy: { hidden: true, noIgnore: true },
+  });
+  for (const args of [
+    ["files", "a", "b"],
+    ["files", "--no-cache"],
+    ["files", "--concurrency", "2"],
+    ["files", "--max-source-bytes", "1"],
+    ["files", "--provider", "vercel"],
+  ])
+    expect(() => parseCommand(args)).toThrow("Usage: jg files");
+});
+
+test("exclude patterns are repeatable, normalized for cache identity, and limited to search or files", () => {
   expect(
     parseCommand([
       "question",

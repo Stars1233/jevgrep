@@ -155,6 +155,28 @@ test("policy overrides are independent and never admit protected storage or bina
   }
 });
 
+test("pages count skipped entries by reason and report file sizes", async () => {
+  const root = await fixture({
+    ".gitignore": "ignored.txt\n",
+    "ignored.txt": "ignored",
+    "node_modules/pkg.js": "dependency",
+    ".env": "secret",
+    "sized.ts": "12345",
+    "dir/inner.ts": "x",
+  });
+  const reader = await createFilesystem({ root });
+  try {
+    const page = await reader.listPage();
+    expect(page.entries.sort((a, b) => a.path.localeCompare(b.path))).toEqual([
+      { path: "dir", kind: "directory" },
+      { path: "sized.ts", kind: "file", bytes: 5 },
+    ]);
+    expect(page.excluded).toEqual({ hidden: 2, ignored: 1, dependency: 1 });
+  } finally {
+    await reader.close();
+  }
+});
+
 test("exclude patterns only narrow eligibility, even with --no-ignore and repository negations", async () => {
   const root = await fixture({
     ".gitignore": "!keep.test.ts\n",

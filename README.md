@@ -129,6 +129,9 @@ Searches send eligible source content to Jev through the provider selected durin
 filesystem filtering respects ignore files and excludes hidden, dependency/build,
 binary, and obvious credential files. These filters are not a guarantee that all
 sensitive information has been removed; choose a search root you intend to send.
+`jg files [root]` counts the files a search under that root may read, grouped by
+top-level directory, with no provider key or network request. It takes the same
+filtering flags as search.
 To skip paths inside that root for one search, pass `--exclude` with a gitignore pattern
 relative to the root, for example `--exclude '**/*.test.ts' --exclude 'src/generated/'`.
 
