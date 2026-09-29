@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { runPython } from "./python.ts";
+import { runParser } from "./parser.ts";
 
 export type Range = { startLine: number; endLine: number };
 import type { Snapshot } from "./filesystem";
@@ -106,7 +106,7 @@ export async function inspect(
   let syntaxFallback = false;
   if (/\.pyi?$/.test(path)) {
     // A missing/incompatible packaged parser is a setup failure, never syntax fallback.
-    const parsed = await runPython<Array<Range & { name: string; ownerHeaders: Range[] }>>(
+    const parsed = await runParser<Array<Range & { name: string; ownerHeaders: Range[] }>>(
       "inspect",
       source,
       options.signal,
@@ -189,8 +189,7 @@ export async function inspect(
     mode,
     comments,
     units: units.flatMap((unit) => {
-      // Frozen helpers report CPython line coordinates, while the caller slices on LF.
-      // Keep those coordinates even for CR-only source or an empty LF slice.
+      // Parser ranges and returned byte spans must remain tied to the original snapshot.
       const start = Math.min(
         text.bytes.length,
         text.offsets[unit.range.startLine - 1] ?? text.bytes.length,
@@ -226,7 +225,7 @@ export async function pythonNeighborhood(
 ): Promise<Range[]> {
   if (!/\.pyi?$/.test(snapshot.path) || Buffer.byteLength(snapshot.source) > 1_000_000) return [];
   return (
-    (await runPython<Range[]>(
+    (await runParser<Range[]>(
       "neighborhood",
       JSON.stringify({ source: snapshot.source, ranges: selected }),
       signal,
@@ -255,7 +254,7 @@ export type SourcePreview = {
   parseUnavailable?: boolean;
   scope?: string;
 };
-/** The bundled preview helper handles Python declarations and generic text windows. */
+/** The preview worker handles Python declarations and generic text windows. */
 export async function pythonPreview(
   snapshot: Snapshot,
   query: string,
@@ -264,7 +263,7 @@ export async function pythonPreview(
 ): Promise<SourcePreview | null> {
   if (!Number.isSafeInteger(budget) || budget < 256)
     throw new Error("Preview allowance must be at least 256 bytes");
-  const result = await runPython<SourcePreview>(
+  const result = await runParser<SourcePreview>(
     "preview",
     JSON.stringify({ text: snapshot.source, path: snapshot.path, query, budget }),
     signal,

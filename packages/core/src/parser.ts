@@ -18,8 +18,8 @@ function stop(owner: Runtime, error: Error, cancellation = false) {
   for (const request of owner.pending.values()) {
     request.cleanup();
     if (cancellation && !request.signal?.aborted) {
-      // Helpers have no side effects; unrelated requests can survive a cancelled interpreter.
-      runPython(request.helper, request.input, request.signal).then(
+      // Helpers have no side effects; unrelated requests can survive a cancelled worker.
+      runParser(request.helper, request.input, request.signal).then(
         request.resolve,
         request.reject,
       );
@@ -30,7 +30,7 @@ function stop(owner: Runtime, error: Error, cancellation = false) {
 }
 function start(): Runtime {
   const owner: Runtime = {
-    worker: fork(new URL("./python-worker.mjs", import.meta.url), [], {
+    worker: fork(new URL("./parser-worker.mjs", import.meta.url), [], {
       execPath: process.versions.bun ? "node" : process.execPath,
       execArgv: [],
       stdio: ["ignore", "ignore", "ignore", "ipc"],
@@ -38,32 +38,29 @@ function start(): Runtime {
     pending: new Map(),
   };
   // Runtime loader diagnostics must not bypass the CLI output contract.
-  owner.worker.on(
-    "message",
-    (message: { id: number; result?: unknown; sourceError?: string; error?: string }) => {
-      const request = owner.pending.get(message.id);
-      if (!request) return;
-      owner.pending.delete(message.id);
-      request.cleanup();
-      if (message.error) request.reject(new Error(`Python helper failed: ${message.error}`));
-      else request.resolve(message.sourceError ? null : message.result);
-      if (!owner.pending.size) {
-        owner.worker.unref();
-        owner.worker.channel?.unref?.();
-      }
-    },
-  );
+  owner.worker.on("message", (message: { id: number; result?: unknown; error?: string }) => {
+    const request = owner.pending.get(message.id);
+    if (!request) return;
+    owner.pending.delete(message.id);
+    request.cleanup();
+    if (message.error) request.reject(new Error(`Parser helper failed: ${message.error}`));
+    else request.resolve(message.result);
+    if (!owner.pending.size) {
+      owner.worker.unref();
+      owner.worker.channel?.unref?.();
+    }
+  });
   owner.worker.on("error", (error) => stop(owner, error));
   owner.worker.on("exit", (code) => {
-    if (runtime === owner) stop(owner, new Error(`Python worker exited (${code})`));
+    if (runtime === owner) stop(owner, new Error(`Parser worker exited (${code})`));
   });
   owner.worker.unref();
   owner.worker.channel?.unref?.();
   return owner;
 }
 
-/** One serialized interpreter; idle workers never keep a CLI alive. Cancellation discards its state. */
-export function runPython<T>(
+/** One serialized parser worker; idle workers never keep a CLI alive. Cancellation discards its state. */
+export function runParser<T>(
   helper: Helper,
   input: string,
   signal?: AbortSignal,
@@ -77,7 +74,7 @@ export function runPython<T>(
         owner,
         signal?.reason instanceof Error
           ? signal.reason
-          : new DOMException("Python parsing cancelled", "AbortError"),
+          : new DOMException("Parser parsing cancelled", "AbortError"),
         true,
       );
     owner.pending.set(id, {

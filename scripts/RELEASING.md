@@ -30,9 +30,12 @@ asset checks. [The build](build-cli.ts) copies the authored MIT license and
 [collects third-party notices](package-notices.mjs) from emitted bundle inputs.
 [Retained license sources](licenses/README.md) document upstream distribution gaps.
 The archive excludes test fixtures, evaluation evidence, node_modules directories, source maps,
-and unbundled development source. Authored Python helpers and the Node worker
+and unbundled development source. The parser worker, extraction code, and packaged Python grammar
 are required runtime assets and are included. Direct runtime parser dependencies
 install from exact npm pins; transitive dependencies resolve during npm installation.
+The registry-verification checkout installs locked development dependencies and
+runs [asset preparation](parser-assets.mjs) before comparing canonical grammar
+bytes and license notices with the downloaded archive.
 
 On an Apple Silicon Mac, run `node scripts/test-native.mjs` after the normal
 `bun install --frozen-lockfile` setup. This builds and packs the candidate, installs

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { inspect } from "../../packages/core/src/source.ts";
 
-test("CPython decorator coordinates and invalid AST syntax retain Python language semantics", async () => {
+test("Python decorator coordinates and malformed syntax retain structural boundaries", async () => {
   const snapshot = (source: string) => ({ path: "sample.py", source, contentHash: "fixture" });
   const decorated = await inspect(snapshot("@(\n    decorator\n)\ndef target():\n    return 1\n"));
   assert.deepEqual(
@@ -19,24 +19,24 @@ test("CPython decorator coordinates and invalid AST syntax retain Python languag
 });
 
 test("cancelled Python startup and active work recover without losing the next request", async () => {
-  const { runPython } = await import("../../packages/core/src/python.ts");
+  const { runParser } = await import("../../packages/core/src/parser.ts");
   const first = new AbortController();
-  const pending = runPython("inspect", "def first():\n    pass\n", first.signal);
+  const pending = runParser("inspect", "def first():\n    pass\n", first.signal);
   first.abort();
   await assert.rejects(pending, { name: "AbortError" });
-  assert.deepEqual(await runPython("inspect", "def recovered():\n    pass\n"), [
+  assert.deepEqual(await runParser("inspect", "def recovered():\n    pass\n"), [
     { name: "recovered", startLine: 1, endLine: 2, ownerHeaders: [] },
   ]);
   const active = new AbortController();
-  const parsing = runPython("inspect", "value = 1\n".repeat(500_000), active.signal);
+  const parsing = runParser("inspect", "value = 1\n".repeat(500_000), active.signal);
   const timer = setTimeout(() => active.abort(), 20);
   try {
     await assert.rejects(parsing, { name: "AbortError" });
   } finally {
     clearTimeout(timer);
   }
-  assert.equal(await runPython("inspect", "def broken():\n    del 1\n"), null);
-  assert.deepEqual(await runPython("inspect", "def healthy():\n    pass\n"), [
+  assert.equal(await runParser("inspect", "def broken():\n    del 1\n"), null);
+  assert.deepEqual(await runParser("inspect", "def healthy():\n    pass\n"), [
     { name: "healthy", startLine: 1, endLine: 2, ownerHeaders: [] },
   ]);
 });
@@ -49,7 +49,7 @@ test("a completed Python helper does not keep the Node process alive", async () 
       "--experimental-strip-types",
       "--input-type=module",
       "-e",
-      `import { runPython } from ${JSON.stringify(new URL("../../packages/core/src/python.ts", import.meta.url).href)}; console.log(JSON.stringify(await runPython('inspect', 'def done():\\n    pass\\n')));`,
+      `import { runParser } from ${JSON.stringify(new URL("../../packages/core/src/parser.ts", import.meta.url).href)}; console.log(JSON.stringify(await runParser('inspect', 'def done():\\n    pass\\n')));`,
     ],
     { stdio: ["ignore", "pipe", "pipe"] },
   );
@@ -78,10 +78,10 @@ test("a completed Python helper does not keep the Node process alive", async () 
 });
 
 test("cancelling one query preserves unrelated concurrent Python work", async () => {
-  const { runPython } = await import("../../packages/core/src/python.ts");
+  const { runParser } = await import("../../packages/core/src/parser.ts");
   const controller = new AbortController();
-  const cancelled = runPython("inspect", "value = 1\n".repeat(100_000), controller.signal);
-  const independent = runPython(
+  const cancelled = runParser("inspect", "value = 1\n".repeat(100_000), controller.signal);
+  const independent = runParser(
     "inspect",
     "def retained():\n    pass\n",
     new AbortController().signal,
@@ -98,6 +98,7 @@ test("oversized CR-only declarations retain every source byte in bounded units",
   const source = 'def target():\r    return "' + "x".repeat(25_000) + '"\r';
   const snapshot = { path: "source.py", source, contentHash: "fixture" };
   const result = await inspect(snapshot);
+  assert.equal(result.mode, "text"); // Bare CR is outside the LF source-coordinate contract.
   assert.equal(result.units.map((unit) => sourceForUnit(snapshot, unit)).join(""), source);
   assert.ok(
     result.units.every((unit) => Buffer.byteLength(sourceForUnit(snapshot, unit)) <= 24_000),
@@ -108,7 +109,7 @@ test(
   "repeated diamond inheritance resolves the same helper without exponential traversal",
   { timeout: 120_000 },
   async () => {
-    const { runPython } = await import("../../packages/core/src/python.ts");
+    const { runParser } = await import("../../packages/core/src/parser.ts");
     let source = "class Root:\n    def helper(self):\n        return 1\n";
     let parent = "Root";
     for (let i = 0; i < 24; i++) {
@@ -117,7 +118,7 @@ test(
     }
     source += `class Leaf(${parent}):\n    def target(self):\n        return self.helper()\n`;
     const end = source.trimEnd().split("\n").length;
-    const actual = await runPython(
+    const actual = await runParser(
       "calls",
       JSON.stringify({ source, ranges: [{ startLine: end - 1, endLine: end }] }),
     );

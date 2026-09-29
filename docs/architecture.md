@@ -30,6 +30,24 @@ requiring complete files in the initial output. Parsing supports Python and
 TypeScript/JavaScript; other or invalid text falls back to bounded source chunks.
 Source ranges always refer to the same immutable snapshot used for classification.
 
+## Parsing
+
+Python uses a [packaged Tree-sitter WASM grammar](../packages/core/assets/README.md)
+in a cancellable worker. This avoids a Python installation requirement and the
+startup cost of embedding an interpreter. TypeScript/JavaScript use the TypeScript
+compiler parser; other eligible text remains searchable through bounded chunks.
+
+The syntax tree supplies declarations and source coordinates. Python query
+previews, structural neighbours and inherited-method reading leads are retrieval
+policy on top of that tree, not a proof of runtime dispatch. Preserve original
+source bytes; never reconstruct returned code from the tree.
+
+Tree-sitter recognizes syntax rather than validating CPython semantics. Trees
+with syntax errors use text fallback. Bare-CR Python also uses text fallback
+because retrieval coordinates count LF lines. Repository source is never executed.
+See [parser contracts](../test/parser/README.md) and
+[measurement evidence](../specs/tree-sitter/RESULTS.md).
+
 ## Output and agent workflow
 
 Stdout begins with status and a compact file summary, then verbatim source blocks,

@@ -988,15 +988,14 @@ test("source budget preserves every file and lead while explicitly omitting sour
   assertCachedRequestsAreReused(fixture.requests, before);
 });
 
-test("missing or corrupt packaged Python assets fail closed without downloads", async (t) => {
+test("missing or corrupt packaged parser assets fail closed without downloads", async (t) => {
   const scratch = await mkdtemp(join(tmpdir(), "jg-missing-python-"));
   t.after(() => rm(scratch, { recursive: true, force: true }));
   for (const [asset, corrupt] of [
-    ["dist/bin/python-worker.mjs", false],
-    ["dist/assets/python/inspect.py", false],
-    ["node_modules/pyodide/pyodide.asm.wasm", false],
-    ["node_modules/pyodide/python_stdlib.zip", false],
-    ["node_modules/pyodide/pyodide.asm.wasm", true],
+    ["dist/bin/parser-worker.mjs", false],
+    ["dist/assets/tree-sitter/tree-sitter-python.wasm", false],
+    ["node_modules/web-tree-sitter/web-tree-sitter.wasm", false],
+    ["dist/assets/tree-sitter/tree-sitter-python.wasm", true],
   ]) {
     const copy = join(scratch, "package");
     await cp(packageDirectory, copy, { recursive: true, dereference: true });

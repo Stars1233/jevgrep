@@ -126,7 +126,7 @@ export function createEvaluator(options: {
           endpoint: endpoint.baseURL,
           protocol: "typesafe-ai-3.0.8",
           policyVersion: options.policyVersion ?? "1",
-          parserVersion: "cpython-3.11.3-pyodide-0.25.1-ts-5.9.3",
+          parserVersion: "tree-sitter-0.27.0-python-0.25.0-ts-5.9.3",
           promptVersion: "unit-locators-1",
         },
       };
