@@ -1,100 +1,79 @@
 {
   "fps": 60,
   "preroll": 0.3,
-  "duration": 36,
+  "duration": 24,
   "bpm": 120,
   "shots": [
     {
-      "id": "title",
       "at": 0,
       "end": 4,
-      "header": "Ask for the behavior."
+      "header": "Introducing jevgrep 0.5",
+      "id": "intro"
     },
     {
-      "id": "preview",
       "at": 4,
       "end": 10,
-      "header": "Preview before the deep read."
+      "header": "59% less API cost, same performance",
+      "id": "proof"
     },
     {
-      "id": "press",
       "at": 10,
-      "end": 16,
-      "header": "One manifest. More code per batch."
+      "end": 14,
+      "header": "Preview. Pick. Read.",
+      "id": "preview"
     },
     {
-      "id": "follow",
-      "at": 16,
-      "end": 22,
-      "header": "Keep the useful connections."
+      "at": 14,
+      "end": 18,
+      "header": "More code. One shared brief.",
+      "id": "batch"
     },
     {
-      "id": "proof",
-      "at": 22,
-      "end": 29,
-      "header": "Less spent on Jev."
-    },
-    {
-      "id": "outro",
-      "at": 29,
-      "end": 36,
-      "header": "Start with the right source."
+      "at": 18,
+      "end": 24,
+      "header": "Find code by what it does.",
+      "id": "terminal"
     }
   ],
   "hits": [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 26, 28,
-    29, 30, 32, 34
+    0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0,
+    9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0,
+    17.5, 18.0, 18.5, 19.0, 19.5, 20.0, 20.5, 21.0, 21.5, 22.0, 22.5, 23.0, 23.5
   ],
-  "reviews": [
-    0.15, 1.5, 3.2, 4.7, 6.5, 8.8, 10.8, 12.8, 15, 16.8, 18.8, 21, 22.8, 25, 28, 30, 32.5, 35.3
-  ],
-  "motion": {
-    "batchLoadStart": 1,
-    "batchLoadDuration": 3,
-    "proofType": 1.8
-  },
-  "cameras3d": [
-    {
-      "from": [10, 5.5, 14],
-      "to": [-5, 4.5, 13],
-      "target": [0, 2.9, 0],
-      "fov": [46, 40],
-      "roll": [-0.04, 0.015]
+  "reviews": [0.15, 0.9, 2.2, 3.7, 4.6, 6.5, 9.3, 10.7, 12, 13.7, 14.7, 16, 17.7, 18.8, 21, 23.5],
+  "events": {
+    "intro": {
+      "introducing": 0,
+      "word": 0.35,
+      "badge": 0.7,
+      "version": 1,
+      "caption": 2,
+      "exit": 3.5
     },
-    {
-      "from": [10, 4.8, 9],
-      "to": [-6, 5.8, 10],
-      "target": [0, 2.4, 0],
-      "fov": [46, 42],
-      "roll": [0.045, -0.025]
+    "proof": {
+      "number": 0,
+      "cut": 0.5,
+      "settle": 1,
+      "same": 1.5
     },
-    {
-      "from": [-12, 7, 13],
-      "to": [8, 8, 14],
-      "target": [0, 3, 0],
-      "fov": [48, 44],
-      "roll": [-0.03, 0.02]
+    "preview": {
+      "scan": 0,
+      "select": 1.5,
+      "stamp": 2,
+      "exit": 3.5
     },
-    {
-      "from": [8, 5, 11],
-      "to": [-8, 7, 11],
-      "target": [0, 3, 1],
-      "fov": [48, 44],
-      "roll": [0.035, -0.035]
+    "batch": {
+      "merge": 0.5,
+      "stamp": 1.8,
+      "count": 2,
+      "caption": 2.5,
+      "exit": 3.5
     },
-    {
-      "from": [5, 4.5, 16],
-      "to": [-1, 4, 14],
-      "target": [0, 2.8, 0],
-      "fov": [46, 44],
-      "roll": [0, 0]
-    },
-    {
-      "from": [-7, 5, 17],
-      "to": [-2, 4, 15],
-      "target": [0, 2.7, 0],
-      "fov": [46, 43],
-      "roll": [-0.02, 0]
+    "terminal": {
+      "enter": 0.35,
+      "results": 1.4,
+      "install": 2.5,
+      "cta": 3
     }
-  ]
+  }
 }

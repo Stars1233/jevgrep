@@ -43,7 +43,7 @@ for (let t = 0; t < T.duration; t += beat) {
       Math.min(1, s * 150) *
       Math.exp(-5 * s),
   );
-  if (t >= 4 && t < 29) {
+  if (t >= 4 && t < T.shots[4].at + 3) {
     const n = [69, 72, 76, 79, 76, 72, 67, 72][b % 8];
     add(
       t + 0.125,
@@ -77,7 +77,11 @@ for (let bar = 0; bar < T.duration / 2; bar++) {
       (i - 1) * 0.6,
     );
 }
-for (const t of T.hits)
+const impacts = new Set([
+  ...T.hits,
+  ...T.shots.flatMap(shot => Object.values(T.events[shot.id]).map(local => shot.at + local)),
+]);
+for (const t of impacts)
   add(t, 0.18, s => 0.12 * (rnd() * 0.55 + Math.sin(2 * PI * 1600 * s) * 0.45) * Math.exp(-35 * s));
 for (const shot of T.shots) {
   if (shot.at === 0) continue;
@@ -142,4 +146,4 @@ const r = spawnSync(
 );
 if (r.error) throw r.error;
 if (r.status !== 0) process.exit(r.status ?? 1);
-console.log('Original synthesized score:36.3s, cues from src/timing.json');
+console.log(`Original synthesized score: ${T.duration + T.preroll}s, cues from src/timing.json`);

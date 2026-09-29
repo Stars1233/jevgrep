@@ -1,29 +1,29 @@
-# The source terminal
+# Jevgrep 0.5 — kinetic release reel
 
-A nocturnal automated cargo facility: dark navy, ultraviolet structures,
-electric-lime lasers and technical typography. Source is cargo. The analogy is
-an ordinary shipping workflow: scan parcels, share a manifest, load a pallet,
-route related cargo, weigh the expense, deliver useful source to the agent.
+The original launch video's energy comes from elastic type, impact cuts, scale
+changes, paper fragments, and sound synchronized to those events. This reel uses
+that motion language with the release's two requested headlines, replacing the
+slower 3D cargo treatment.
 
-The user asked for a different style, then specifically for a spicier 3D film.
-The final treatment replaces the initial vector study with a fully rendered
-Three.js world. Beveled metal cartridges, surface scratches, bolts, rollers,
-a moving gantry, physical type and emissive cables give it tangible scale.
-The lens uses AO, depth of field, bloom, grain and subtle impact aberration.
+The mechanism analogy is a fast sorting desk: skim a fan of pages, select the
+useful source, collect it under one shared brief, and deliver the result to the
+agent. Ivory, ink, coral and blue keep the type dominant. A fragmenting cost bar
+makes the reduction physical; a stamp and collapsing page stack explain the
+retrieval changes without a long technical tour.
 
-All boundaries, camera endpoints, review times and music hits live in
-`src/timing.json`. Times below exclude the 0.3-second completed-command preview;
-the soundtrack has the same offset.
-
-| Time | Camera and action |
+| Time | Action |
 | --- | --- |
-| 0–4 | Sweep around extruded `jg` while source cartridges orbit the terminal. |
-| 4–10 | Cross the roller conveyor through the laser inspection arch; rejected cargo takes a side lane. |
-| 10–16 | Arc around the robotic gantry as cartridges descend onto a shared pallet beside one manifest. |
-| 16–22 | Orbit source cartridges linked by curved routes carrying luminous pulses. |
-| 22–29 | Push into physical `59%` typography with eight illuminated proof markers and the full cost disclosure. |
-| 29–36 | Track past delivered source into a reconstructed real search, with install/auth/skill commands. |
+| 0–4 | “Introducing jevgrep 0.5”: letters drop, the version slams, then the composition accelerates out. |
+| 4–10 | “59% less Jev API cost, same performance”: the cost bar breaks apart and the second line lands. |
+| 10–14 | A magnifier crosses a fan of source pages; the selected page grows while the others leave. |
+| 14–18 | Pages collapse into a batch with one brief; a stamp lands and the packet shoots toward the terminal. |
+| 18–24 | The actual recorded search fills the terminal; install, auth and skill commands close the reel. |
 
-Proof is the ten-task combined-cost report under `evals/results/`. The 59%
-figure describes estimated native Jev cost against saved 0.4.3; combined cost
-was 2–3% higher. Both versions solved 8/10. No speed claim is made.
+The completed-command thumbnail holds for 0.3 seconds before the main timeline.
+Music has the same offset. Impact cues and scene boundaries live in timing.json;
+local motion offsets align with those shared impact cues.
+
+“59%” means estimated native Jev API cost versus the saved 0.4.3 cohort.
+“Same performance” means 8/10 official task solves in both versions, not elapsed
+time. The README and linked report preserve the sample, cost scope and methodology.
+The film carries the benefit in large type, with no fine print or asterisks.

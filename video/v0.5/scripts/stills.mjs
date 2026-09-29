@@ -3,13 +3,13 @@ import { openBrowser, selectComposition, renderStill } from '@remotion/renderer'
 import { mkdirSync, readFileSync } from 'node:fs';
 const timing = JSON.parse(readFileSync(new URL('../src/timing.json', import.meta.url)));
 const serveUrl = await bundle({ entryPoint: 'src/index.ts' });
-const browser = await openBrowser('chrome', { chromiumOptions: { gl: 'angle' } });
+const browser = await openBrowser('chrome', {});
 const composition = await selectComposition({
   serveUrl,
   id: 'Release',
   puppeteerInstance: browser,
 });
-mkdirSync('out/review-3d', { recursive: true });
+mkdirSync('out/review', { recursive: true });
 try {
   for (const [i, t] of timing.reviews.entries()) {
     await renderStill({
@@ -18,7 +18,7 @@ try {
       puppeteerInstance: browser,
       frame: Math.round(t * timing.fps),
       scale: 0.5,
-      output: `out/review-3d/frame-${String(i).padStart(2, '0')}.png`,
+      output: `out/review/frame-${String(i).padStart(2, '0')}.png`,
     });
     console.log(`Frame ${i}: ${t}s`);
   }
