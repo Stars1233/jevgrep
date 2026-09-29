@@ -150,9 +150,9 @@ class InstalledTests(unittest.TestCase):
 
     def test_only_unambiguous_standalone_search_gets_credit(self):
         for command in ['jg "query with ; punctuation"', "/bin/sh -lc 'jg query'",
-                        'jg --no-cache "query" /testbed', '/opt/jg-install/bin/jg "query" --max-source-bytes=0']:
+                        'jg --no-cache "query" /testbed', 'jg "query" --exclude tests/ --exclude=src/generated/', '/opt/jg-install/bin/jg "query" --max-source-bytes=0']:
             with self.subTest(command=command): self.assertTrue(runner.direct_jg_search(command))
-        for command in ['jg', 'jg doctor', 'jg auth --stdin', 'jg cache clear', 'jg skill', 'jg --help',
+        for command in ['jg', 'jg files', 'jg files /testbed', 'jg files --exclude tests/', 'jg doctor', 'jg auth --stdin', 'jg cache clear', 'jg skill', 'jg --help',
                         'jg -h', 'jg --version', 'jg "query" --version', 'jg "query"; sleep 5',
                         'jg "query" && sleep 5', 'sleep 5 | jg "query"', 'jg "query" > out',
                         'jg "$(sleep 5)"', 'env KEY=value jg "query"', 'echo jg "query"', 'jg "query" &', 'jg doc*', 'jg auth?', 'jg {auth,doctor}',

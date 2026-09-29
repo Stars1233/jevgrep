@@ -320,13 +320,20 @@ def direct_jg_search(command):
             elif options and arg.startswith('--max-source-bytes='):
                 if not arg.split('=', 1)[1].isdigit():
                     return False
+            elif options and arg == '--exclude':
+                index += 1
+                if index >= len(argv) or not argv[index]:
+                    return False
+            elif options and arg.startswith('--exclude='):
+                if not arg.split('=', 1)[1]:
+                    return False
             elif options and arg.startswith('-'):
                 return False
             else:
                 positionals.append(arg)
             index += 1
         return (1 <= len(positionals) <= 2 and bool(positionals[0].strip()) and
-                positionals[0] not in ('auth', 'doctor', 'cache', 'skill'))
+                positionals[0] not in ('auth', 'doctor', 'cache', 'skill', 'files'))
     except ValueError:
         return False
 
