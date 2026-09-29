@@ -1,0 +1,29 @@
+{
+  "name": "jevgrep-video-v0.5",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "music": "node scripts/music.mjs",
+    "draft": "npm run music && remotion render src/index.ts Release out/draft.mp4 --scale=0.5 --crf=20",
+    "render": "npm run music && remotion render src/index.ts Release out/jevgrep-0.5.0.mp4 --crf=14 --x264-preset=slow --audio-bitrate=320k",
+    "poster": "remotion still src/index.ts KeyArt out/key-art.png",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.529",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "4.0.529",
+    "@react-three/fiber": "^9.8.1",
+    "@remotion/three": "4.0.529",
+    "three": "^0.186.1",
+    "postprocessing": "^6.39.5",
+    "n8ao": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^5.9.3",
+    "@types/three": "^0.186.0"
+  }
+}
