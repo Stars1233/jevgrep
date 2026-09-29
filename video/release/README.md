@@ -1,52 +1,51 @@
-# Jevgrep 0.5 — magnetic search field
+# Jevgrep 0.5 release film
 
-An 18-second release film: a brief cost result, two concrete savings mechanisms,
-and the installation commands. Previews avoid unnecessary full reads; larger
-code batches share one relevance brief. Local object motion follows the beat,
-with no full-screen red wash, edge pulse or red wipe.
+A 22-second, beat-driven launch film. The repo is a mountain of paper files;
+`jg` core-drills previews instead of opening everything, judges a whole batch
+under one shared brief, hands back verbatim source, and the Jev API cost tower
+loses 59% of its coins. Ends on the install commands and the 0.5 lockup.
 
-This standalone package is outside the CLI workspace. Node.js 24 and ffmpeg are
-required. From this directory:
+Standalone package (outside the CLI workspace). Node.js 24 and ffmpeg required.
 
 ```sh
 npm ci
-npm run music
+npm run music      # synthesize public/score.wav from src/timeline.ts
 npm run studio
-npm run draft
-npm run stills
-npm run render
+npm run draft      # half-res preview
+npm run stills     # review frames, impact frames, key art, thumbnail into out/
+npm run render     # master: 1080p60, H.264 CRF 14, 320k AAC -> out/jevgrep-0.5-short.mp4
 npm run check-types
 ```
 
-The master is `out/jevgrep-0.5-short.mp4`, rendered at 1080p60 with H.264 CRF 14 and
-320k AAC. Generated media and dependencies are ignored. Font licenses accompany
-the vendored Anton and IBM Plex Mono files.
+## Sound and picture share one schedule
 
-## Sound and motion are one schedule
+`src/timeline.ts` owns every event time (beats, stabs, tag pops, verdicts, coin
+drops, keystrokes, impacts, risers, whips). Scenes read it for motion and
+`scripts/score.mjs` reads it to synthesize the music and effects, so hits land
+on hits. Times are "main time"; a 0.3 s pre-roll holds the opening frame (the
+social preview: wordmark, 0.5, and a finished `jg` run) and shifts picture and
+sound together.
 
-`src/timeline.ts` defines beats, accents and scene cues. Both the synthesized
-score and picture consume its events. Kick and snare envelopes drive visible
-scene effects continuously; accents drive the larger transformations. The
-0.3-second thumbnail pre-roll shifts picture and sound together.
+Generated audio, renders and stills are ignored. Fraunces and IBM Plex Mono are
+vendored with their OFL licenses. Audio was verified by measurement (−13.7 LUFS
+integrated, −0.8 dBFS peak, spectrogram impacts at cue times), not by ear.
 
-Review every shot and the before/on/after-impact sequences. A pretty still is
-not evidence of dynamic motion. `npm run stills` captures both sets plus key art.
-Check audio loudness and its spectrogram; audio is measured, not auditioned.
+## Claim sources (kept out of the film)
 
-## Claim sources
-
-The [retained benchmark report](../../evals/results/combined-cost-research-2026-09-28.md)
-compares the saved 0.4.3 cohort with the accepted 0.5 strategy. Estimated native
-Jev API cost is 59.24% lower, rounded to 59%; coding-agent costs are outside that
-headline. Both versions solved 8/10 of the same ten tuned Python SWE-bench tasks.
-“Same performance” refers to those task results, not speed or statistical
-equivalence. Native prices are estimates, including a conservative allowance
-for 19 missing responses. Methodology stays in these supporting docs, not in
-the marketing frames.
-
-The opening thumbnail reproduces an installed-CLI search run on this repository:
-`jg "How are previews used to decide which files to open?" packages/core`.
-It returned 17 files; the displayed first three paths are followed by an
-ellipsis. Source-strip artwork illustrates retrieval rather than a literal
-inventory of every request. The install sequence includes authentication and
-the official skill because agents need that setup to use the CLI.
+- **59% less Jev API cost** — [combined-cost research](../../evals/results/combined-cost-research-2026-09-28.md):
+  estimated native Jev API cost, 0.5.0 candidate vs. the saved 0.4.3 cohort
+  (59.24%, rounded). Native prices are list-price estimates with a conservative
+  allowance for 19 responses with missing usage.
+- **Same tasks solved (8/10 and 8/10)** — same report; the same ten tuned Python
+  SWE-bench tasks. Not a speed claim and not a statistical equivalence claim.
+- **Not claimed:** total coding-agent cost. The report records combined
+  Sol-plus-Jev cost 2–3% higher, accepted for this release, so the film says
+  "Jev API cost" only.
+- **Mechanisms shown** — previews decide which files open, larger declaration
+  batches, one shared question brief ([architecture](../../docs/architecture.md)).
+  Drill and stamp counts are illustration, not statistics.
+- **Opening terminal** — a real run, `jg "How are previews used to decide which
+  files to open?" packages/core` with jg 0.5.0 on this repo: 17 relevant files;
+  first three paths shown.
+- **Install commands** — `npm install -g @dzhng/jevgrep`, `jg auth`, `jg skill`
+  as documented in the root README.
