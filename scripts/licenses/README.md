@@ -14,5 +14,5 @@ there is no build-time or runtime license download.
 ## Parser grammars
 
 The build copies license notices directly from the pinned official Tree-sitter
-Python grammar package. Its WASM file is shipped unmodified. The external
+grammar packages. Their WASM files are shipped unmodified. The external
 web-tree-sitter and TypeScript packages retain their installed license files.

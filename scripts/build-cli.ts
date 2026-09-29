@@ -25,7 +25,7 @@ await writeFile(
   join(out, "THIRD_PARTY_NOTICES.txt"),
   (await bundledNotices(build.metafile!, process.cwd())) + grammarNotices,
 );
-for (const name of ["parser-worker", "parser-helpers", "parser-preview"])
+for (const name of ["parser-worker", "parser-helpers", "parser-preview", "parser-declarations"])
   await cp(join(root, `packages/core/src/${name}.mjs`), join(out, `bin/${name}.mjs`));
 await cp(join(root, "LICENSE"), join(out, "LICENSE"));
 await cp(join(root, "packages/core/assets"), join(out, "assets"), { recursive: true });

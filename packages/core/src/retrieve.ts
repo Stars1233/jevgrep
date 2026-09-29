@@ -277,7 +277,7 @@ export async function retrieve(input: SearchInput, evaluator: Evaluator): Promis
     }
     if (
       truncated &&
-      /\.(?:pyi?|[cm]?[jt]s|[jt]sx)$/.test(source.path) &&
+      /\.(?:pyi?|[cm]?[jt]s|[jt]sx|go|rs)$/.test(source.path) &&
       bytes.length <= 1_000_000
     ) {
       const syntax = await inspect(source, {

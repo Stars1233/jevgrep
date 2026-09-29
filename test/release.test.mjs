@@ -89,21 +89,26 @@ test("archive validation rejects changed skill bytes and accidental source paylo
     LICENSE: "MIT canonical copyright\n",
     "skills/jevgrep/SKILL.md": "Use jg for unfamiliar code.\n",
     ...Object.fromEntries(
-      ["parser-worker", "parser-helpers", "parser-preview"].map((name) => [
+      ["parser-worker", "parser-helpers", "parser-preview", "parser-declarations"].map((name) => [
         `packages/core/src/${name}.mjs`,
         "// fixture",
       ]),
     ),
     "packages/core/package.json": JSON.stringify({
-      devDependencies: { "tree-sitter-python": "1.0.0" },
+      devDependencies: Object.fromEntries(
+        ["python", "go", "rust"].map((name) => [`tree-sitter-${name}`, "1.0.0"]),
+      ),
     }),
-    "packages/core/node_modules/tree-sitter-python/package.json": JSON.stringify({
-      name: "tree-sitter-python",
-      version: "1.0.0",
-      license: "MIT",
-    }),
-    "packages/core/node_modules/tree-sitter-python/LICENSE": "MIT fixture grammar license",
-    "packages/core/assets/tree-sitter/tree-sitter-python.wasm": "Python grammar fixture",
+    ...Object.fromEntries(
+      ["python", "go", "rust"].flatMap((name) => [
+        [
+          `packages/core/node_modules/tree-sitter-${name}/package.json`,
+          JSON.stringify({ name: `tree-sitter-${name}`, version: "1.0.0", license: "MIT" }),
+        ],
+        [`packages/core/node_modules/tree-sitter-${name}/LICENSE`, "MIT fixture grammar license"],
+        [`packages/core/assets/tree-sitter/tree-sitter-${name}.wasm`, `${name} grammar fixture`],
+      ]),
+    ),
   };
   for (const [path, text] of Object.entries(files)) {
     await mkdir(join(root, path, ".."), { recursive: true });
@@ -118,14 +123,14 @@ test("archive validation rejects changed skill bytes and accidental source paylo
     ["apps/cli/package.json", "package.json"],
     ["LICENSE", "dist/LICENSE"],
     ["skills/jevgrep/SKILL.md", "dist/skills/jevgrep/SKILL.md"],
-    ...["parser-worker", "parser-helpers", "parser-preview"].map((name) => [
+    ...["parser-worker", "parser-helpers", "parser-preview", "parser-declarations"].map((name) => [
       `packages/core/src/${name}.mjs`,
       `dist/bin/${name}.mjs`,
     ]),
-    [
-      "packages/core/assets/tree-sitter/tree-sitter-python.wasm",
-      "dist/assets/tree-sitter/tree-sitter-python.wasm",
-    ],
+    ...["python", "go", "rust"].map((name) => [
+      `packages/core/assets/tree-sitter/tree-sitter-${name}.wasm`,
+      `dist/assets/tree-sitter/tree-sitter-${name}.wasm`,
+    ]),
   ])
     await cp(join(root, from), join(pkg, to));
   await writeFile(join(pkg, "dist/bin/index.js"), '#!/usr/bin/env node\nconsole.log("jg");\n');
@@ -169,9 +174,9 @@ test("archive validation rejects changed skill bytes and accidental source paylo
   await assert.rejects(validateRelease(tarball, "v1.2.3", root), /Unexpected published file/);
 });
 
-test("grammar notices retain the official Python parser license", async () => {
+test("grammar notices retain all official parser licenses", async () => {
   const { grammarAssets } = await import("../scripts/parser-assets.mjs");
   const notices = await grammarAssets();
-  assert.match(notices, /tree-sitter-python@/);
+  for (const name of ["python", "go", "rust"]) assert.ok(notices.includes(`tree-sitter-${name}@`));
   assert.match(notices, /Permission is hereby granted/);
 });

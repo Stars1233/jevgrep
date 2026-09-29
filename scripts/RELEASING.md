@@ -30,7 +30,7 @@ asset checks. [The build](build-cli.ts) copies the authored MIT license and
 [collects third-party notices](package-notices.mjs) from emitted bundle inputs.
 [Retained license sources](licenses/README.md) document upstream distribution gaps.
 The archive excludes test fixtures, evaluation evidence, node_modules directories, source maps,
-and unbundled development source. The parser worker, extraction code, and packaged Python grammar
+and unbundled development source. The parser worker, extraction code, and packaged grammars
 are required runtime assets and are included. Direct runtime parser dependencies
 install from exact npm pins; transitive dependencies resolve during npm installation.
 The registry-verification checkout installs locked development dependencies and
@@ -40,7 +40,7 @@ bytes and license notices with the downloaded archive.
 On an Apple Silicon Mac, run `node scripts/test-native.mjs` after the normal
 `bun install --frozen-lockfile` setup. This builds and packs the candidate, installs
 it with npm outside the checkout, and runs the credential-free commands and
-synthetic Python search against a loopback Gateway fixture. To verify an existing
+synthetic Python/Go/Rust searches against a loopback Gateway fixture. To verify an existing
 archive without Bun, use `node scripts/test-native.mjs --prebuilt /path/package.tgz`.
 The command prints the archive hash and actual Node/macOS runtime for retained
 evidence. It requires Node 22 or newer; a result proves the printed version only.

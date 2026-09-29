@@ -467,6 +467,73 @@ test("skill command delegates installation to npx without credentials", async (t
   assert.match(unavailable.stdout, /requires npx/);
 });
 
+test("installed Go/Rust search indexes late methods and selects their source instead of distant noise", async (t) => {
+  const fixture = await context(t, async ({ body, response }) => {
+    const answers = Object.fromEntries(
+      Object.keys(body.questions).map((id) => {
+        const match = /^(q|scope|ref)(\d+)$/.exec(id);
+        const selected =
+          body.state.declarations && match
+            ? match[1] === "scope" ||
+              (match[1] === "q" &&
+                body.state.declarations[Number(match[2])].name.endsWith(".record_event"))
+            : !id.startsWith("ref");
+        return [id, { type: "noul", noul: selected ? 0.95 : 0.05 }];
+      }),
+    );
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(JSON.stringify({ answers }));
+    return true;
+  });
+  const files = [
+    [
+      "sample.go",
+      "package sample\n" +
+        Array.from(
+          { length: 160 },
+          (_, i) => `func noise${i}() string { return "DISTANT_NOISE_${i}_${"x".repeat(100)}" }\n`,
+        ).join("") +
+        'type Box struct {}\nfunc (b *Box) record_event() string { return "go-evidence" }\n',
+      "go-evidence",
+    ],
+    [
+      "sample.rs",
+      Array.from(
+        { length: 160 },
+        (_, i) => `fn noise${i}() -> &'static str { "DISTANT_NOISE_${i}_${"x".repeat(100)}" }\n`,
+      ).join("") +
+        'struct Box;\n#[allow(dead_code)]\nimpl Box {\n #[inline]\n pub fn record_event(&self) -> &str { "rust-evidence" }\n}\n',
+      "rust-evidence",
+    ],
+  ];
+  for (const [path, source] of files) await writeFile(join(fixture.tree, path), source);
+  const result = await fixture.run([query, fixture.tree, "--no-cache"]);
+  assert.equal(result.code, 0, result.stdout);
+  for (const [path, , marker] of files) {
+    assert.ok(
+      fixture.requests.some(
+        ({ body }) =>
+          body.state.path === path &&
+          body.state.preview?.truncated &&
+          body.state.preview.declarations?.some((d) => d.name === "Box.record_event"),
+      ),
+      `Missing late-method preview for ${path}`,
+    );
+    assert.ok(
+      fixture.requests.some(
+        ({ body }) =>
+          body.state.path === path &&
+          body.state.declarations?.some((d) => d.name === "Box.record_event"),
+      ),
+      `Missing named selection for ${path}`,
+    );
+    assert.ok(result.stdout.includes(marker), result.stdout);
+  }
+  assert.ok(result.stdout.includes("#[allow(dead_code)]"), result.stdout);
+  assert.ok(result.stdout.includes("#[inline]"), result.stdout);
+  assert.ok(!result.stdout.includes("DISTANT_NOISE_0_"), result.stdout);
+});
+
 test("actual installed search parses Python and returns every relevant hierarchy branch", async (t) => {
   const fixture = await context(t);
   const result = await fixture.run([query, fixture.tree, "--no-cache"]);
@@ -991,23 +1058,51 @@ test("source budget preserves every file and lead while explicitly omitting sour
 test("missing or corrupt packaged parser assets fail closed without downloads", async (t) => {
   const scratch = await mkdtemp(join(tmpdir(), "jg-missing-python-"));
   t.after(() => rm(scratch, { recursive: true, force: true }));
-  for (const [asset, corrupt] of [
+  for (const [asset, corrupt, extension] of [
     ["dist/bin/parser-worker.mjs", false],
     ["dist/assets/tree-sitter/tree-sitter-python.wasm", false],
     ["node_modules/web-tree-sitter/web-tree-sitter.wasm", false],
     ["dist/assets/tree-sitter/tree-sitter-python.wasm", true],
+    ["dist/assets/tree-sitter/tree-sitter-go.wasm", false, "go"],
+    ["dist/assets/tree-sitter/tree-sitter-go.wasm", true, "go"],
+    ["dist/assets/tree-sitter/tree-sitter-rust.wasm", false, "rs"],
+    ["dist/assets/tree-sitter/tree-sitter-rust.wasm", true, "rs"],
   ]) {
     const copy = join(scratch, "package");
     await cp(packageDirectory, copy, { recursive: true, dereference: true });
     await access(join(copy, asset));
     if (corrupt) await writeFile(join(copy, asset), "corrupt runtime fixture");
     else await rm(join(copy, asset));
-    const fixture = await context(t, "healthy", join(copy, "dist/bin/index.js"));
+    const fixture = await context(
+      t,
+      extension
+        ? async ({ body, response }) => {
+            response.writeHead(200, { "content-type": "application/json" });
+            response.end(
+              JSON.stringify({
+                answers: Object.fromEntries(
+                  Object.keys(body.questions).map((id) => [id, { type: "noul", noul: 0.95 }]),
+                ),
+              }),
+            );
+            return true;
+          }
+        : "healthy",
+      join(copy, "dist/bin/index.js"),
+    );
+    if (extension)
+      await writeFile(
+        join(fixture.tree, `broken.${extension}`),
+        extension === "go" ? "package sample\nfunc record_event() {}\n" : "fn record_event() {}\n",
+      );
     const result = await fixture.run([query, fixture.tree, "--no-cache"]);
     assert.equal(result.code, 1, `${asset} (corrupt=${corrupt}): ${result.stdout}`);
     assert.ok(result.stdout.trim(), "Asset failure must produce a diagnostic");
     assert.ok(
-      !fixture.requests.some(({ body }) => body.state.declarations),
+      !fixture.requests.some(
+        ({ body }) =>
+          body.state.declarations && (!extension || body.state.path === `broken.${extension}`),
+      ),
       "Unavailable parser assets must not fabricate declaration evidence",
     );
     await fixture.removeCredentials();

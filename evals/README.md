@@ -40,3 +40,6 @@ why lower retrieval charges can be offset by greater coding-agent expense.
 
 The [skill-impact pilot](results/skill-impact-2026-09-29.md) compares old and new
 skills on identical CLI builds, separately from automatic-trigger checks.
+
+The [Python parser checkpoint](results/python-parser-checkpoint-2026-09-29.md)
+records one official task against the merged Tree-sitter runtime.

@@ -23,3 +23,7 @@ misrepresented as malformed user source.
 Inherited-call tests preserve useful reading leads when a receiver or callee is
 parenthesized, or a selected excerpt contains only a multiline call’s opening
 line. They assert returned locations rather than the grammar’s node shape.
+
+Go/Rust tests exercise named selection, declaration groups, generic receivers,
+Rust owner/attribute context, and byte-preserving fallback. Installed coverage
+checks late-method previews, exact selected source, and missing/corrupt grammars.

@@ -1,22 +1,29 @@
 import { Parser, Language, Query } from "web-tree-sitter";
 import { fileURLToPath } from "node:url";
+import { declarations } from "./parser-declarations.mjs";
 import { preview } from "./parser-preview.mjs";
 let initialized;
-let language;
-async function parse(source, action) {
+const languages = new Map();
+async function parse(source, action, languageName = "python") {
   // Retrieval coordinates count LF lines; normalizing bare CR would mislabel original bytes.
-  if (/\r(?!\n)/.test(source)) return null;
+  if (languageName === "python" && /\r(?!\n)/.test(source)) return null;
   await (initialized ??= Parser.init());
-  language ??= await Language.load(
-    fileURLToPath(new URL("../assets/tree-sitter/tree-sitter-python.wasm", import.meta.url)),
-  );
+  if (!languages.has(languageName))
+    languages.set(
+      languageName,
+      await Language.load(
+        fileURLToPath(
+          new URL(`../assets/tree-sitter/tree-sitter-${languageName}.wasm`, import.meta.url),
+        ),
+      ),
+    );
   const parser = new Parser();
   let tree;
   try {
-    parser.setLanguage(language);
+    parser.setLanguage(languages.get(languageName));
     tree = parser.parse(source);
     if (!tree || tree.rootNode.hasError) return null;
-    if (!validPython(tree.rootNode)) return null;
+    if (languageName === "python" && !validPython(tree.rootNode)) return null;
     return action(tree.rootNode);
   } finally {
     tree?.delete();
@@ -48,7 +55,7 @@ let syntaxChecks;
 function validPython(root) {
   // Let the native query engine skip nodes that cannot affect this compatibility policy.
   syntaxChecks ??= new Query(
-    language,
+    languages.get("python"),
     `[
     (exec_statement) (print_statement) (except_clause) (raise_statement) (for_in_clause)
     (concatenated_string) (function_definition) (class_definition) (integer)
@@ -414,6 +421,8 @@ function calls(root, source, ranges) {
 export async function execute(helper, input) {
   if (helper === "inspect") return parse(input, inspectPython);
   const data = JSON.parse(input);
+  if (helper === "declarations")
+    return parse(data.source, (root) => declarations(root, data.language), data.language);
   if (helper === "neighborhood")
     return parse(data.source, (root) => neighborhood(root, data.ranges));
   if (helper === "calls")

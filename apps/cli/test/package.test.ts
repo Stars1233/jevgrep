@@ -37,7 +37,8 @@ testInDocker(
       const filenames = packed.files.map((file: { path: string }) => file.path);
       expect(filenames).toContain("dist/bin/index.js");
       expect(filenames).toContain("dist/bin/parser-worker.mjs");
-      expect(filenames).toContain("dist/assets/tree-sitter/tree-sitter-python.wasm");
+      for (const name of ["python", "go", "rust"])
+        expect(filenames).toContain(`dist/assets/tree-sitter/tree-sitter-${name}.wasm`);
       expect(filenames).toContain("dist/THIRD_PARTY_NOTICES.txt");
       expect(filenames).toContain("dist/skills/jevgrep/SKILL.md");
       expect(filenames.some((path: string) => /^(evals|src|node_modules|test)\//.test(path))).toBe(

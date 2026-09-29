@@ -4,7 +4,7 @@ import { readFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { grammarAssets } from "./parser-assets.mjs";
+import { grammarAssets, grammars } from "./parser-assets.mjs";
 const execute = promisify(execFile);
 export const repository = fileURLToPath(new URL("../", import.meta.url));
 
@@ -48,9 +48,10 @@ export async function validateRelease(tarball, tag, root = repository) {
   if (new Set(files).size !== files.length) throw new Error("Duplicate archive entries");
   for (const path of files)
     if (
-      !/^package\/(?:package\.json|README(?:\.md)?|LICENSE|dist\/(?:bin\/(?:index\.js|parser-(?:worker|helpers|preview)\.mjs)|assets\/(?:tree-sitter\/tree-sitter-python\.wasm|README\.md)|skills\/jevgrep\/SKILL\.md|LICENSE|THIRD_PARTY_NOTICES\.txt))$/.test(
+      !/^package\/(?:package\.json|README(?:\.md)?|LICENSE|dist\/(?:bin\/(?:index\.js|parser-(?:worker|helpers|preview|declarations)\.mjs)|assets\/(?:README\.md)|skills\/jevgrep\/SKILL\.md|LICENSE|THIRD_PARTY_NOTICES\.txt))$/.test(
         path,
-      )
+      ) &&
+      !grammars.some((name) => path === `package/dist/assets/tree-sitter/tree-sitter-${name}.wasm`)
     )
       throw new Error(`Unexpected published file: ${path}`);
   const listing = await execute("tar", ["-tvzf", tarball], { maxBuffer: 8_000_000 });
@@ -76,14 +77,14 @@ export async function validateRelease(tarball, tag, root = repository) {
   for (const [packed, original] of [
     ["dist/LICENSE", "LICENSE"],
     ["dist/skills/jevgrep/SKILL.md", "skills/jevgrep/SKILL.md"],
-    ...["parser-worker", "parser-helpers", "parser-preview"].map((name) => [
+    ...["parser-worker", "parser-helpers", "parser-preview", "parser-declarations"].map((name) => [
       `dist/bin/${name}.mjs`,
       `packages/core/src/${name}.mjs`,
     ]),
-    [
-      "dist/assets/tree-sitter/tree-sitter-python.wasm",
-      "packages/core/assets/tree-sitter/tree-sitter-python.wasm",
-    ],
+    ...grammars.map((name) => [
+      `dist/assets/tree-sitter/tree-sitter-${name}.wasm`,
+      `packages/core/assets/tree-sitter/tree-sitter-${name}.wasm`,
+    ]),
   ])
     if (!(await extract(packed)).equals(await readFile(resolve(root, original))))
       throw new Error(`Packaged ${packed} differs from its canonical source`);

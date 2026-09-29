@@ -1,6 +1,6 @@
 import { fork, type ChildProcess } from "node:child_process";
 
-type Helper = "inspect" | "preview" | "neighborhood" | "calls";
+type Helper = "inspect" | "preview" | "neighborhood" | "calls" | "declarations";
 type Pending = {
   helper: Helper;
   input: string;
