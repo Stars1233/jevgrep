@@ -1,9 +1,9 @@
 # Jevgrep 0.5 — magnetic search field
 
-A 24-second release film built from blank source. Upright condensed typography
-sits inside a moving source field: search isolates relevant code, reference
-threads collect it, and a real CLI run delivers the result. Beat-driven rings,
-light sweeps, camera impacts, scanline tears and fragments carry the motion.
+An 18-second release film: a brief cost result, two concrete savings mechanisms,
+and the installation commands. Previews avoid unnecessary full reads; larger
+code batches share one relevance brief. Local object motion follows the beat,
+with no full-screen red wash, edge pulse or red wipe.
 
 This standalone package is outside the CLI workspace. Node.js 24 and ffmpeg are
 required. From this directory:
@@ -18,7 +18,7 @@ npm run render
 npm run check-types
 ```
 
-The master is `out/jevgrep-0.5.mp4`, rendered at 1080p60 with H.264 CRF 14 and
+The master is `out/jevgrep-0.5-short.mp4`, rendered at 1080p60 with H.264 CRF 14 and
 320k AAC. Generated media and dependencies are ignored. Font licenses accompany
 the vendored Anton and IBM Plex Mono files.
 
@@ -44,7 +44,7 @@ equivalence. Native prices are estimates, including a conservative allowance
 for 19 missing responses. Methodology stays in these supporting docs, not in
 the marketing frames.
 
-The terminal reproduces a fresh installed-CLI search run on this repository:
+The opening thumbnail reproduces an installed-CLI search run on this repository:
 `jg "How are previews used to decide which files to open?" packages/core`.
 It returned 17 files; the displayed first three paths are followed by an
 ellipsis. Source-strip artwork illustrates retrieval rather than a literal

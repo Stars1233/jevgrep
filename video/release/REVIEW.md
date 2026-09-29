@@ -1,32 +1,26 @@
-# Review record
+# Short cut review
 
-The production was rebuilt from blank source after deleting all earlier video
-projects and renders. The first new draft was rejected by an independent visual
-reviewer: its effects moved while its subjects remained too fixed.
+The 18-second revision removes full-screen red washes, pulsing edge light,
+expanding red rings and red wipes. Only local source, scanner and cost-fragment
+motion follows the beat. The cost shot lasts 2.5 seconds, followed by concrete
+preview-admission and shared-brief batching illustrations. The final 4.5 seconds
+are reserved for installation, authentication and skill setup.
 
-The revised direction moves the subjects themselves. The title changes scale
-when the version arrives; the percentage reframes as the cost bar loses its
-right-hand section; selected source takes over the search aperture; linked
-sources transfer into a single packet and move through camera; the terminal
-leaves to make the installation command the final hero. Headlines remain upright.
+A fresh reviewer inspected all 17 chronological frames and the impact sheets.
+No blocking layout or legibility issue was found. The before/after mechanisms
+were clear and no full-screen red wash appeared in the captures.
 
-The reviewer inspected every shot plus before/on/after-impact sequences and
-accepted the revised composition and subject motion. Final checks cover clearing
-background strips behind the collected packet and ensuring the larger packet
-fits before its intentional camera transition.
+The preview and batch claims were checked against the retained benchmark report
+and the production shared-criteria request builder and 128-unit batch limit.
+Methodology remains outside the marketing frames. Type checking passes.
 
-The independent code review found a one-frame floating-point synchronization
-error. Picture time now subtracts the integer pre-roll frame count before
-conversion to seconds. Audio and visual envelopes consume the same event
-schedule. Type checking passes.
+Audio is verified by measurement and spectrogram, not by ear. Final encoded
+media metadata and loudness readings live in ignored out/.
 
-Audio is checked by measurement and spectrogram, not by ear. The compressed
-score measured −12.9 LUFS integrated and −1.3 dBFS true peak before AAC encoding.
-Final media metadata and encoded-audio readings are kept with the ignored render
-artifacts under out/.
+Independent code review found duplicate accents when the installation and final
+scene share a timestamp. Accent times are now deduplicated; all 13 are unique.
 
-Final encoded-frame review accepted all settled shots and transition sequences:
-the collected card is legible, has title/footer clearance, and the distracting
-strip cluster is gone. The 1080p60 master contains 1,458 frames plus AAC padding.
-Final AAC measures −13.1 LUFS integrated, 1.0 LU range and −0.9 dBFS true peak.
-All 182 scheduled events pass the integer-frame beat-boundary check.
+Final encoded-frame review accepted the batch layout, thumbnail and installation
+ending with no blockers. The master is 1,098 frames at 1080p60 (18.3 seconds
+including thumbnail hold). AAC measures −13.2 LUFS and −1.2 dBFS true peak;
+audio was checked by measurement, not by ear.

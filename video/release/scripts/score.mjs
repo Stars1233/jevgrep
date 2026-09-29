@@ -18,7 +18,7 @@ function add(time, duration, sound, pan = 0) {
   }
 }
 for (const e of EVENTS) {
-  const gain = e.a * (e.t >= 22 ? 0.45 : 1);
+  const gain = e.a * (e.t >= DURATION - 2 ? 0.45 : 1);
   if (e.kind === 'kick') {
     add(
       e.t,
@@ -75,9 +75,9 @@ for (const e of EVENTS) {
     );
   }
 }
-for (let i = 0; i < 96; i++) {
+for (let i = 0; i < DURATION * 4; i++) {
   const time = i * 0.25;
-  if (time < 4 || time > 22) continue;
+  if (time < CUE.claim || time > DURATION - 1.5) continue;
   const notes = [220, 261.63, 329.63, 392, 329.63, 293.66, 261.63, 196];
   const f = notes[i % 8];
   add(

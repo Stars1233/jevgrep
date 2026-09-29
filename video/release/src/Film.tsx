@@ -148,7 +148,7 @@ function Intro({ t }: { t: number }) {
         <div
           style={{
             height: 4,
-            width: `${clamp(t / 4) * 100}%`,
+            width: `${clamp(t / CUE.claim) * 100}%`,
             background: RED,
             boxShadow: `0 0 ${10 + kick * 30}px ${RED}`,
           }}
@@ -251,106 +251,175 @@ function Source({
   );
 }
 function Search({ t }: { t: number }) {
-  const lock = bounce(t, CUE.lock);
+  const lock = bounce(t, CUE.lock),
+    fade = 1 - progress(t, CUE.lock, 0.25);
   return (
     <>
-      <HitText text="CUT THE NOISE." t={t} start={CUE.search} x={110} y={125} size={125} />
-      <div
-        style={{
-          ...at(120, 310),
-          fontFamily: 'Mono',
-          fontSize: 34,
-          color: BLUE,
-          opacity: progress(t, CUE.search + 0.5),
-        }}
-      >
-        “How are previews used to decide which files to open?”
-      </div>
+      <HitText
+        text="PREVIEW BEFORE FULL READS."
+        t={t}
+        start={CUE.search}
+        x={110}
+        y={125}
+        size={106}
+      />
+      {[0, 1, 2].map(i => (
+        <div
+          key={i}
+          style={{
+            ...at(190 + i * 560, 480),
+            width: 420,
+            height: 170,
+            border: `2px solid ${BLUE}`,
+            background: '#101823',
+            padding: 28,
+            boxSizing: 'border-box',
+            opacity: fade,
+          }}
+        >
+          <div style={{ fontFamily: 'Mono', fontSize: 29, color: BLUE }}>PREVIEW</div>
+          {[280, 220, 300].map((w, j) => (
+            <div key={j} style={{ height: 5, width: w, background: '#dbe7f688', marginTop: 18 }} />
+          ))}
+        </div>
+      ))}
       <div style={{ opacity: clamp(lock * 3) }}>
         <Source
           index={0}
           x={960}
-          y={660}
+          y={625}
           scale={0.5 + lock * 0.85}
           energy={pulse(t, 'accent', 0.1)}
         />
         <div
           style={{
-            ...at(1315, 540),
-            width: 112,
-            height: 112,
+            ...at(1320, 510),
+            width: 104,
+            height: 104,
             borderRadius: '50%',
-            background: RED,
-            color: WHITE,
+            background: BLUE,
+            color: '#08090d',
             fontFamily: 'Display',
-            fontSize: 74,
+            fontSize: 73,
             textAlign: 'center',
-            lineHeight: '112px',
-            transform: `scale(${bounce(t, CUE.lock)})`,
+            lineHeight: '104px',
           }}
         >
           ✓
         </div>
       </div>
+      <HitText
+        text="FULL READS ONLY WHEN RELEVANT."
+        t={t}
+        start={CUE.lock + 0.25}
+        x={110}
+        y={888}
+        size={70}
+        color={BLUE}
+      />
     </>
   );
 }
 function Context({ t }: { t: number }) {
-  const enter = progress(t, CUE.context, 0.4),
-    collect = progress(t, CUE.collect, 0.8),
-    depart = progress(t, CUE.terminal - 0.35, 0.35);
-  const coords = [
-    [440, 510],
-    [1430, 540],
-    [960, 820],
-  ];
+  const collect = progress(t, CUE.collect, 0.85),
+    tick = pulse(t, 'kick', 0.08);
   return (
     <>
-      <HitText text="KEEP THE CONTEXT." t={t} start={CUE.context} x={110} y={125} size={122} />
-      {coords.map(([x, y], i) => (
-        <Source
+      <HitText text="ONE BRIEF. MORE CODE." t={t} start={CUE.context} x={110} y={125} size={120} />
+      {[0, 1, 2].map(i => (
+        <div
           key={i}
-          index={i}
-          x={x + (960 - x) * collect}
-          y={y + (620 - y) * collect + i * 9 * collect}
-          scale={(0.6 + enter * 0.4) * (1 + collect * 0.65 + depart * 5)}
-          opacity={(1 - depart) * (i === 0 ? 1 : clamp(1 - collect * 4))}
-        />
+          style={{
+            ...at(160 + i * 555 + (960 - (160 + i * 555)) * collect, 330 - collect * 20),
+            width: 490,
+            height: 85,
+            background: BLUE,
+            color: '#08090d',
+            fontFamily: 'Mono',
+            fontSize: 27,
+            lineHeight: '85px',
+            textAlign: 'center',
+            opacity: clamp(1 - collect * 3),
+            transform: `translateX(${-collect * 245}px)`,
+          }}
+        >
+          RELEVANCE CRITERIA
+        </div>
       ))}
+      {Array.from({ length: 18 }, (_, i) => {
+        const x = 190 + (i % 6) * 266,
+          y = 495 + Math.floor(i / 6) * 115;
+        return (
+          <div
+            key={i}
+            style={{
+              ...at(
+                x + (550 + (i % 6) * 130 - x) * collect,
+                y + (500 + Math.floor(i / 6) * 75 - y) * collect,
+              ),
+              width: 210 * (1 - collect) + 110 * collect,
+              height: 72 * (1 - collect) + 48 * collect,
+              border: `2px solid ${BLUE}`,
+              background: '#132130',
+              transform: `scale(${1 + tick * 0.035})`,
+            }}
+          >
+            {[0, 1, 2].map(j => (
+              <div
+                key={j}
+                style={{
+                  margin: '6px 12px',
+                  height: 3,
+                  width: `${70 - j * 13}%`,
+                  background: '#cfe5fa99',
+                }}
+              />
+            ))}
+          </div>
+        );
+      })}
       <div
         style={{
-          ...at(120, 945),
-          fontFamily: 'Display',
-          fontSize: 47,
-          color: BLUE,
-          opacity: collect * (1 - depart),
+          ...at(475, 330),
+          width: 950,
+          height: 405,
+          border: `3px solid ${BLUE}`,
+          boxShadow: '0 0 25px #87eaff22',
+          opacity: collect,
         }}
       >
-        THE RIGHT SOURCE. READY FOR YOUR AGENT.
+        <div
+          style={{
+            height: 92,
+            background: BLUE,
+            color: '#08090d',
+            fontFamily: 'Mono',
+            fontSize: 38,
+            textAlign: 'center',
+            lineHeight: '92px',
+          }}
+        >
+          ONE SHARED BRIEF
+        </div>
       </div>
+      <HitText
+        text="UP TO 128 CODE UNITS PER BATCH."
+        t={t}
+        start={CUE.collect + 0.6}
+        x={110}
+        y={865}
+        size={75}
+      />
     </>
   );
 }
-function Terminal({ t, thumb = false }: { t: number; thumb?: boolean }) {
-  const entrance = thumb ? 1 : bounce(t, CUE.terminal),
-    result = thumb ? 1 : progress(t, CUE.results, 0.45),
-    cta = thumb ? 0 : progress(t, CUE.install, 0.5);
+function Thumbnail() {
   return (
     <>
-      <div
-        style={{
-          ...at(110, 100),
-          fontFamily: 'Display',
-          fontSize: thumb ? 91 : 118,
-          color: WHITE,
-          letterSpacing: -2,
-        }}
-      >
-        {thumb ? 'INTRODUCING JEVGREP 0.5' : 'JEVGREP 0.5'}
+      <div style={{ ...at(110, 100), fontFamily: 'Display', fontSize: 91, color: WHITE }}>
+        INTRODUCING JEVGREP 0.5
       </div>
-      <div
-        style={{ ...at(115, 250), fontFamily: 'Mono', fontSize: 32, color: BLUE, opacity: 1 - cta }}
-      >
+      <div style={{ ...at(115, 250), fontFamily: 'Mono', fontSize: 32, color: BLUE }}>
         Find code by what it does.
       </div>
       <div
@@ -361,8 +430,6 @@ function Terminal({ t, thumb = false }: { t: number; thumb?: boolean }) {
           border: '1px solid #7e8a9c',
           borderLeft: `7px solid ${RED}`,
           background: '#0a0e17f5',
-          boxShadow: '0 20px 90px #000',
-          transform: `translate(${cta * 2100}px,${(1 - entrance) * 400}px)`,
           fontFamily: 'Mono',
           padding: '34px 40px',
           boxSizing: 'border-box',
@@ -375,7 +442,7 @@ function Terminal({ t, thumb = false }: { t: number; thumb?: boolean }) {
           <span style={{ color: RED }}>$</span> jg "How are previews used to decide which files to
           open?" packages/core
         </div>
-        <div style={{ marginTop: 26, opacity: result }}>
+        <div style={{ marginTop: 26 }}>
           <span style={{ color: BLUE }}>Jevgrep: 17 relevant files.</span>
           <br />
           {paths[0]}
@@ -383,68 +450,42 @@ function Terminal({ t, thumb = false }: { t: number; thumb?: boolean }) {
           {paths[1]} &nbsp; · &nbsp; {paths[2]} &nbsp; …
         </div>
       </div>
-      {!thumb && (
-        <div
-          style={{
-            ...at(110, 300),
-            fontFamily: 'Display',
-            fontSize: 138,
-            color: WHITE,
-            lineHeight: 1.12,
-            opacity: cta,
-            transform: `translateX(${(1 - cta) * -1500}px)`,
-          }}
-        >
-          YOUR AGENT.
-          <br />
-          <span style={{ color: RED }}>BETTER CONTEXT.</span>
-        </div>
-      )}
-      <div
-        style={{
-          ...at(115, thumb ? 838 : 730),
-          fontFamily: 'Mono',
-          fontSize: thumb ? 36 : 57,
-          color: WHITE,
-          opacity: thumb ? 1 : cta,
-        }}
-      >
+      <div style={{ ...at(115, 838), fontFamily: 'Mono', fontSize: 36, color: WHITE }}>
         npm i -g @dzhng/jevgrep
       </div>
-      <div
-        style={{
-          ...at(115, thumb ? 901 : 842),
-          fontFamily: 'Mono',
-          fontSize: thumb ? 31 : 44,
-          color: RED,
-          opacity: thumb ? 1 : cta,
-        }}
-      >
-        jg auth &nbsp; → &nbsp; jg skill
-      </div>
-      <div style={{ ...at(1175, 950), fontFamily: 'Mono', fontSize: 26, color: '#afbdd1' }}>
-        github.com/dzhng/jevgrep
+      <div style={{ ...at(115, 901), fontFamily: 'Mono', fontSize: 31, color: BLUE }}>
+        jg auth → jg skill
       </div>
     </>
   );
 }
-function Cut({ t }: { t: number }) {
-  const cue = [CUE.claim, CUE.search, CUE.context, CUE.terminal].find(
-    at => t >= at && t < at + 0.22,
-  );
-  if (cue === undefined) return null;
-  const p = (t - cue) / 0.22;
+function Install({ t }: { t: number }) {
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background: RED,
-        transform: `translateX(${(p * 2 - 1) * 2200}px)`,
-        clipPath: 'polygon(8% 0,100% 0,92% 100%,0 100%)',
-        pointerEvents: 'none',
-      }}
-    />
+    <>
+      <HitText text="INSTALL JEVGREP." t={t} start={CUE.install} x={110} y={130} size={132} />
+      {['npm i -g @dzhng/jevgrep', 'jg auth', 'jg skill'].map((command, i) => {
+        const p = progress(t, CUE.install + 0.25 + i * 0.5, 0.25);
+        return (
+          <div
+            key={command}
+            style={{
+              ...at(120, 420 + i * 175),
+              fontFamily: 'Mono',
+              fontSize: 57,
+              color: WHITE,
+              opacity: p,
+              transform: `translateX(${(1 - p) * 100}px)`,
+            }}
+          >
+            <span style={{ color: BLUE, marginRight: 45, fontSize: 35 }}>0{i + 1}</span>
+            {command}
+          </div>
+        );
+      })}
+      <div style={{ ...at(115, 970), fontFamily: 'Mono', fontSize: 28, color: BLUE }}>
+        github.com/dzhng/jevgrep
+      </div>
+    </>
   );
 }
 export function Film() {
@@ -460,7 +501,7 @@ export function Film() {
         <>
           <Field t={pre ? 22 : t} />
           {pre ? (
-            <Terminal t={22} thumb />
+            <Thumbnail />
           ) : t < CUE.claim ? (
             <Intro t={t} />
           ) : t < CUE.search ? (
@@ -470,11 +511,10 @@ export function Film() {
           ) : t < CUE.terminal ? (
             <Context t={t} />
           ) : (
-            <Terminal t={t} />
+            <Install t={t} />
           )}
         </>
       )}
-      {!pre && <Cut t={t} />}
       <div
         style={{
           position: 'absolute',
@@ -492,8 +532,8 @@ export function Poster() {
     <AbsoluteFill style={{ background: '#08090d' }}>
       {ready && (
         <>
-          <Field t={7} />
-          <Proof t={7} />
+          <Field t={4.25} />
+          <Proof t={4.25} />
         </>
       )}
     </AbsoluteFill>

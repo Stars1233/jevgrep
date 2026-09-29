@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef } from 'react';
-import { CUE, EVENTS, clamp, ease, progress, pulse } from './timeline';
+import { CUE, clamp, progress, pulse } from './timeline';
 const W = 1920,
   H = 1080,
   RED = '#ff3e2b',
@@ -32,7 +32,7 @@ export function Field({ t }: { t: number }) {
     g.fillStyle = '#08090d';
     g.fillRect(0, 0, W, H);
     const bloom = g.createRadialGradient(960, 560, 20, 960, 560, 1000);
-    bloom.addColorStop(0, `rgba(126,22,16,${0.1 + kick * 0.11})`);
+    bloom.addColorStop(0, 'rgba(28,40,60,.12)');
     bloom.addColorStop(0.5, 'rgba(16,24,34,.2)');
     bloom.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = bloom;
@@ -85,27 +85,6 @@ export function Field({ t }: { t: number }) {
     g.restore();
     g.globalAlpha = 1;
     g.shadowBlur = 0;
-    // Concentric beat rings are full-frame effects, not static decoration.
-    const cx = 960,
-      cy = 540;
-    for (const e of EVENTS) {
-      if (e.kind !== 'accent' || e.t !== CUE.fracture) continue;
-      const age = t - e.t;
-      if (age < 0 || age > 0.7) continue;
-      const q = age / 0.7;
-      const radius = 80 + ease(q) * 1250;
-      g.globalAlpha = (1 - q) * (0.25 + e.a * 0.35) * (closing ? 0.3 : 1);
-      glow(
-        g,
-        e.kind === 'accent' ? RED : '#697f94',
-        Math.max(1, (1 - q) * (e.kind === 'accent' ? 14 : 4)),
-      );
-      g.beginPath();
-      g.ellipse(cx, cy, radius, radius * 0.56, 0, 0, Math.PI * 2);
-      g.stroke();
-    }
-    g.globalAlpha = 1;
-    g.shadowBlur = 0;
     // The API cost mass loses 59% of its fragments exactly on the accent.
     if (t >= CUE.claim && t < CUE.search) {
       const d = t - CUE.fracture;
@@ -131,7 +110,7 @@ export function Field({ t }: { t: number }) {
       g.shadowBlur = 0;
     }
     if (inSearch) {
-      const scan = progress(t, CUE.scan, 2.5),
+      const scan = progress(t, CUE.scan, CUE.lock - CUE.scan),
         lock = progress(t, CUE.lock, 0.3);
       const originalX = 250 + scan * 1420,
         sx = originalX + (960 - originalX) * lock,
@@ -149,45 +128,6 @@ export function Field({ t }: { t: number }) {
       g.fillRect(sx - 100, 250, 200, 650);
       g.globalAlpha = 1;
       g.shadowBlur = 0;
-    }
-    if (inCollect) {
-      const collect = progress(t, CUE.collect, 0.8),
-        starts = [
-          [750, 510],
-          [1120, 540],
-          [960, 725],
-        ];
-      for (let i = 0; i < 3; i++) {
-        const [x, y] = starts[i],
-          sx = x + (960 - x) * collect,
-          sy = y + (620 - y) * collect,
-          cx = (sx + 960) / 2,
-          cy = (sy + 620) / 2 - (1 - collect) * (80 + kick * 35);
-        g.globalAlpha = 1 - collect;
-        glow(g, i === 0 ? RED : BLUE, 3 + kick * 3);
-        g.beginPath();
-        g.moveTo(sx, sy);
-        g.quadraticCurveTo(cx, cy, 960, 620);
-        g.stroke();
-        for (let n = 0; n < 4; n++) {
-          const u = (t * 1.7 + n / 4) % 1,
-            px = (1 - u) ** 2 * sx + 2 * (1 - u) * u * cx + u * u * 960,
-            py = (1 - u) ** 2 * sy + 2 * (1 - u) * u * cy + u * u * 620;
-          g.fillStyle = '#f3fbff';
-          g.beginPath();
-          g.arc(px, py, 4 + kick * 3, 0, Math.PI * 2);
-          g.fill();
-        }
-      }
-      g.globalAlpha = 1 - collect;
-      g.fillStyle = RED;
-      g.shadowColor = RED;
-      g.shadowBlur = 40;
-      g.beginPath();
-      g.arc(960, 620, 12 + kick * 12, 0, Math.PI * 2);
-      g.fill();
-      g.shadowBlur = 0;
-      g.globalAlpha = 1;
     }
     // Bass hits drive perspective streaks, giving the field a physical acceleration.
     if (kick > 0.12 && !closing) {
@@ -220,13 +160,6 @@ export function Field({ t }: { t: number }) {
       g.fillRect(x, y, 2 + phase * 7, 1 + phase * 3);
     }
     g.globalAlpha = 1;
-    const edge = g.createLinearGradient(0, 0, 0, H);
-    edge.addColorStop(0, `rgba(255,62,43,${0.12 + kick * 0.3})`);
-    edge.addColorStop(0.12, '#ff3e2b00');
-    edge.addColorStop(0.88, '#ff3e2b00');
-    edge.addColorStop(1, `rgba(255,62,43,${0.1 + snare * 0.3})`);
-    g.fillStyle = edge;
-    g.fillRect(0, 0, W, H);
   }, [t]);
   return <canvas ref={ref} width={W} height={H} style={{ position: 'absolute', inset: 0 }} />;
 }

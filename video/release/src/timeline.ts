@@ -1,46 +1,46 @@
 export const FPS = 60,
   PRE = 0.3,
-  DURATION = 24,
+  DURATION = 18,
   BPM = 120;
 export const CUE = {
   introduce: 0,
-  name: 0.5,
-  version: 1.5,
-  claim: 4,
-  fracture: 4.5,
-  parity: 6,
-  search: 9,
-  scan: 10,
-  lock: 12.5,
-  context: 14,
-  collect: 16,
-  terminal: 18,
-  results: 19,
-  install: 20.5,
-  end: 24,
+  name: 0.25,
+  version: 1,
+  claim: 2.5,
+  fracture: 3,
+  parity: 3.5,
+  search: 5,
+  scan: 5.25,
+  lock: 7,
+  context: 9,
+  collect: 10.5,
+  terminal: 13.5,
+  results: 14,
+  install: 13.5,
+  end: 18,
 };
 export const SHOTS = [
-  { at: 0, end: 4 },
-  { at: 4, end: 9 },
-  { at: 9, end: 14 },
-  { at: 14, end: 18 },
-  { at: 18, end: 24 },
+  { at: 0, end: 2.5 },
+  { at: 2.5, end: 5 },
+  { at: 5, end: 9 },
+  { at: 9, end: 13.5 },
+  { at: 13.5, end: 18 },
 ];
 export type Event = { t: number; kind: 'kick' | 'snare' | 'hat' | 'accent'; a: number };
 export const EVENTS: Event[] = [
-  ...Array.from({ length: 48 }, (_, i) => ({
+  ...Array.from({ length: DURATION * 2 }, (_, i) => ({
     t: i * 0.5,
     kind: 'kick' as const,
     a: i < 4 ? 0.65 : 1,
   })),
-  ...Array.from({ length: 24 }, (_, i) => ({ t: i + 0.5, kind: 'snare' as const, a: 0.8 })),
-  ...Array.from({ length: 96 }, (_, i) => ({
+  ...Array.from({ length: DURATION }, (_, i) => ({ t: i + 0.5, kind: 'snare' as const, a: 0.8 })),
+  ...Array.from({ length: DURATION * 4 }, (_, i) => ({
     t: i * 0.25,
     kind: 'hat' as const,
     a: i % 2 ? 0.7 : 0.3,
   })),
-  ...Object.values(CUE)
-    .filter(t => t < 24)
+  ...Array.from(new Set(Object.values(CUE)))
+    .filter(t => t < DURATION)
     .map(t => ({ t, kind: 'accent' as const, a: 1 })),
 ];
 export const clamp = (x: number) => Math.min(1, Math.max(0, x));
@@ -55,9 +55,9 @@ export const pulse = (t: number, kind: Event['kind'], decay = 0.14) =>
     ),
   );
 export const REVIEW = [
-  0.15, 0.55, 1.3, 2.5, 3.75, 4.65, 6.6, 8.7, 9.8, 11.4, 13.4, 14.6, 16.7, 17.8, 18.9, 20.8, 23.3,
+  0.15, 0.9, 1.8, 2.6, 3.25, 4.25, 5.15, 5.9, 7.1, 8.6, 9.5, 10.8, 12.5, 13.6, 14.3, 15.4, 17.8,
 ];
 export const IMPACT_REVIEW = [
-  4.45, 4.5, 4.56, 4.66, 4.83, 5.05, 12.45, 12.5, 12.56, 12.7, 12.9, 13.15, 1.45, 1.55, 1.75, 2,
-  17.6, 17.7, 17.8, 17.9, 20.45, 20.6, 20.8, 21.1,
+  2.95, 3, 3.08, 3.25, 3.5, 4.1, 6.9, 7, 7.15, 7.4, 8, 8.5, 10.4, 10.5, 10.7, 11, 11.3, 12, 13.5,
+  13.7, 14, 14.5, 15, 17,
 ];
