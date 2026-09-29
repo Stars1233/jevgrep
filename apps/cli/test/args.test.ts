@@ -149,3 +149,18 @@ test("exclude patterns are repeatable, normalized for cache identity, and limite
   for (const args of [["doctor"], ["auth"], ["skill"], ["cache", "clear"]])
     expect(() => parseCommand([...args, "--exclude", "docs"])).toThrow();
 });
+
+test("exclude rejects odd trailing backslash runs but preserves escaped backslashes", () => {
+  for (const command of ["question", "files"]) {
+    for (const count of [1, 3, 5])
+      expect(() => parseCommand([command, "--exclude", "secrets" + "\\".repeat(count)])).toThrow(
+        "--exclude",
+      );
+    for (const count of [2, 4]) {
+      const pattern = "secrets" + "\\".repeat(count);
+      expect(parseCommand([command, "--exclude", pattern])).toMatchObject({
+        policy: { exclude: [pattern] },
+      });
+    }
+  }
+});

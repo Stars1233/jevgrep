@@ -63,6 +63,9 @@ export function validateBaseURL(value: unknown): string {
     throw new Error(
       "Base URL must use https:// (http:// is allowed only for localhost or 127.0.0.1).",
     );
+  // The SDK appends /systemone directly; URL suffixes would consume that path.
+  if (baseURL.includes("?") || baseURL.includes("#") || url.username || url.password)
+    throw new Error("Base URL must not contain credentials, a query string, or a fragment.");
   return baseURL;
 }
 

@@ -11,7 +11,7 @@ Updated existing skill installations in `aiexplainer`, `jevgrep`, `battlegame`, 
 one existing Battlegame worktree under `~/dev`. Five physical files and their
 Claude aliases (nine paths total) match the merged canonical skill. Historical
 benchmark snapshots were preserved. Previous bytes and SHA256 records are in the
-[rollout manifest](../runs/skill-rollout-2026-09-29/manifest.json).
+local `evals/runs/skill-rollout-2026-09-29/manifest.json` (ignored run storage).
 
 This updates skill text, not the globally installed CLI. The global executable
 remains 0.5.0; the skill advises checking help for newer commands. The benchmark
@@ -32,7 +32,7 @@ invocation, not successful retrieval. The isolated catalog creates a ceiling
 effect and does not reproduce Claude's competing-plugin setup in issue #29.
 A separate reviewer audited all 18 raw traces and confirmed the counts.
 
-The [trigger report](../runs/skill-trigger-2026-09-29/REPORT.md) contains the
+The [trigger report](skill-trigger-2026-09-29.md) contains the
 protocol, per-run evidence, token usage, invalid initial probe, and limitations.
 Native CLI monetary usage was unavailable; the shim made no retrieval calls.
 

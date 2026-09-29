@@ -163,11 +163,11 @@ function policyFrom(values: {
         !pattern.trim() ||
         /^[!#]/.test(pattern) ||
         /[\r\n]/.test(pattern) ||
-        /(?:^|[^\\])\\$/.test(pattern),
+        /(?:^|[^\\])(?:\\\\)*\\$/.test(pattern),
     )
   )
     throw new CliError(
-      "--exclude takes one gitignore pattern without a leading ! or # or a trailing \\.",
+      "--exclude takes one gitignore pattern without a leading ! or # or a trailing unescaped \\.",
     );
   const policy: NonNullable<SearchInput["policy"]> = {};
   if (values.hidden) policy.hidden = true;

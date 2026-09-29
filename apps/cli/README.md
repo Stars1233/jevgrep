@@ -42,6 +42,30 @@ are accepted for a local proxy. Auth and doctor name only the endpoint host, nev
 the key. The saved endpoint and model are part of the cache identity, so custom
 answers stay separate from the preset providers’ answers and from other endpoints.
 
+A custom base URL must contain only the scheme, host, and optional path: no
+embedded credentials, query string, or fragment. Jevgrep appends `/systemone` to
+that base URL and sends the saved key as a Bearer token.
+
+For gateway implementers, Jevgrep's boolean questions arrive as `noul` questions
+**without `criteria`**. A minimal request and response are:
+
+```json
+{
+  "model": "your-model",
+  "state": "source context",
+  "questions": { "q": { "type": "noul", "instructions": "Relevant?" } }
+}
+```
+
+```json
+{ "answers": { "q": { "type": "noul", "noul": 0.9 } } }
+```
+
+Return an answer for every question ID, with a finite `noul` value between 0 and 1.
+These answers need neither `probabilities` nor `confidence`. A server that demands
+`criteria.true` and returns HTTP 422 is incompatible with these requests. Run
+`jg doctor` against a custom gateway before searching a repository.
+
 Credentials are saved under
 `$XDG_CONFIG_HOME/jevgrep/credentials.json`, or `~/.config/jevgrep/credentials.json`.
 Existing saved records without a provider still mean Vercel, without a migration.

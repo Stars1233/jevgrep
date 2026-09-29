@@ -60,6 +60,7 @@ that reuse. Source snapshots retain their existing read and freshness checks.
 
 ## Version improvement
 
+The [evaluation guide](../evals/README.md) links the harness and result reports.
 The [evaluation policy](../evals/cost-quality-policy.md) owns version improvement:
 official task completion is primary, full coding-agent cost is reported, and Jev
 cost is separate. Preserve fixed baselines and identify measured artifacts and
